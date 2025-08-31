@@ -1,0 +1,6 @@
+[tools]
+go = "1.23"
+grpcurl = "latest"
+protoc = "latest"
+protoc-gen-go = "latest"
+protoc-gen-go-grpc = "latest"

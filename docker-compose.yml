@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   service-a:
     build:
@@ -8,9 +6,11 @@ services:
       args:
         SERVICE: service-a
     ports:
-      - "8080:8080"
+      - "5005:5005"
     environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      GRPC_PORT: 5005
+      # OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_GRPC_ENDPOINT: http://otel-collector:4317
       OTEL_SERVICE_NAME: service-a
     depends_on:
       - service-b
@@ -23,9 +23,11 @@ services:
       args:
         SERVICE: service-b
     ports:
-      - "8081:8080"
+      - "5006:5005"
     environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      GRPC_PORT: 5005
+      # OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_GRPC_ENDPOINT: http://otel-collector:4317
       OTEL_SERVICE_NAME: service-b
     depends_on:
       - otel-collector

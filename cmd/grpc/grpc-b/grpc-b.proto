@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/ashleyconnor/slog-test/cmd/grpc/grpc-b/grpc-b";
+
+package grpc_b;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayWorld (WorldRequest) returns (WorldReply) {}
+}
+
+// The request message containing the user's name.
+message WorldRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message WorldReply {
+  string message = 1;
+}

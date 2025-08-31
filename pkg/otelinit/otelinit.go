@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/propagation"
@@ -16,11 +17,38 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 )
 
+// Init HTTP Provider
 func InitProvider(serviceName string) func(context.Context) error {
 	ctx := context.Background()
 
 	// Export traces to OTel collector
 	exp, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")))
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+
+	// Set up propagator.
+	prop := newPropagator()
+	otel.SetTextMapPropagator(prop)
+
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exp),
+		sdktrace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(serviceName),
+		)),
+	)
+
+	otel.SetTracerProvider(tp)
+
+	return tp.Shutdown
+}
+
+func InitgRPCProvider(serviceName string) func(context.Context) error {
+	ctx := context.Background()
+
+	exp, err := otlptracegrpc.New(
+		ctx, otlptracegrpc.WithEndpointURL(os.Getenv("OTEL_EXPORTER_OTLP_GRPC_ENDPOINT")))
 	if err != nil {
 		log.Fatalf("failed to create exporter: %v", err)
 	}

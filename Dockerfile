@@ -13,7 +13,7 @@ COPY . .
 
 # The service to build is passed as a build arg
 ARG SERVICE
-RUN go build -o /bin/server ./cmd/${SERVICE}
+RUN go build -o /bin/server ./cmd/grpc/${SERVICE}
 
 # Final minimal image
 FROM gcr.io/distroless/base-debian12
@@ -21,5 +21,5 @@ FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /bin/server /app/server
 
-EXPOSE 8080
+EXPOSE 5005
 CMD ["/app/server"]
